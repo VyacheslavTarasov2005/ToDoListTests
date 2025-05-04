@@ -1,0 +1,146 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/tasks": {
+            "post": {
+                "description": "Create a new task",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Create a task",
+                "parameters": [
+                    {
+                        "description": "Task",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DTOs.CreateTaskRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Task"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ApplicationError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "DTOs.CreateTaskRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "deadline": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/enums.Priority"
+                }
+            }
+        },
+        "enums.Priority": {
+            "type": "string",
+            "enum": [
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+            ],
+            "x-enum-varnames": [
+                "Low",
+                "Medium",
+                "High",
+                "Critical"
+            ]
+        },
+        "enums.Status": {
+            "type": "string",
+            "enum": [
+                "Active",
+                "Completed",
+                "Overdue",
+                "Late"
+            ],
+            "x-enum-varnames": [
+                "Active",
+                "Completed",
+                "Overdue",
+                "Late"
+            ]
+        },
+        "errors.ApplicationError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Task": {
+            "type": "object",
+            "properties": {
+                "changedAt": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/enums.Priority"
+                },
+                "status": {
+                    "$ref": "#/definitions/enums.Status"
+                }
+            }
+        }
+    }
+}

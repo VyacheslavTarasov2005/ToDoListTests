@@ -1,0 +1,98 @@
+definitions:
+  DTOs.CreateTaskRequest:
+    properties:
+      deadline:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/enums.Priority'
+    required:
+    - name
+    type: object
+  enums.Priority:
+    enum:
+    - Low
+    - Medium
+    - High
+    - Critical
+    type: string
+    x-enum-varnames:
+    - Low
+    - Medium
+    - High
+    - Critical
+  enums.Status:
+    enum:
+    - Active
+    - Completed
+    - Overdue
+    - Late
+    type: string
+    x-enum-varnames:
+    - Active
+    - Completed
+    - Overdue
+    - Late
+  errors.ApplicationError:
+    properties:
+      code:
+        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+      statusCode:
+        type: integer
+    type: object
+  models.Task:
+    properties:
+      changedAt:
+        type: string
+      createdAt:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/enums.Priority'
+      status:
+        $ref: '#/definitions/enums.Status'
+    type: object
+info:
+  contact: {}
+paths:
+  /tasks:
+    post:
+      consumes:
+      - application/json
+      description: Create a new task
+      parameters:
+      - description: Task
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/DTOs.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/errors.ApplicationError'
+      summary: Create a task
+      tags:
+      - tasks
+swagger: "2.0"

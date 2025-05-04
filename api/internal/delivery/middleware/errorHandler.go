@@ -18,8 +18,9 @@ func ErrorHandler() gin.HandlerFunc {
 		var appErr errors.ApplicationError
 		if defaultErrors.As(c.Errors[0].Err, &appErr) {
 			c.AbortWithStatusJSON(appErr.StatusCode, gin.H{
-				"code":   appErr.Code,
-				"errors": appErr.Errors,
+				"code":       appErr.Code,
+				"errors":     appErr.Errors,
+				"statusCode": appErr.StatusCode,
 			})
 			return
 		}
