@@ -1,10 +1,10 @@
 package enums
 
-type Status int
+type Status string
 
 const (
-	Active Status = iota
-	Completed
-	Overdue
-	Late
+	Active    Status = "Active"
+	Completed Status = "Completed"
+	Overdue   Status = "Overdue"
+	Late      Status = "Late"
 )

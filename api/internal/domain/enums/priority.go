@@ -1,10 +1,10 @@
 package enums
 
-type Priority int
+type Priority string
 
 const (
-	Low Priority = iota
-	Medium
-	High
-	Critical
+	Low      Priority = "Low"
+	Medium   Priority = "Medium"
+	High     Priority = "High"
+	Critical Priority = "Critical"
 )
