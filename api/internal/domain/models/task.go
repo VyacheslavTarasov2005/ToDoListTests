@@ -8,13 +8,13 @@ import (
 
 type Task struct {
 	ID          uuid.UUID
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"not null"`
 	ChangedAt   *time.Time
-	Name        string
+	Name        string `gorm:"not null"`
 	Description *string
 	Deadline    *time.Time
-	Status      enums.Status
-	Priority    enums.Priority
+	Status      enums.Status   `gorm:"not null"`
+	Priority    enums.Priority `gorm:"not null"`
 }
 
 func NewTask(name string, description *string, deadline *time.Time, status *enums.Status,
