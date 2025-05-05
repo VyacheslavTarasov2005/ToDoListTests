@@ -48,7 +48,16 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, task)
+	c.JSON(http.StatusCreated, DTOs.TaskResponse{
+		ID:          task.ID,
+		CreatedAt:   task.CreatedAt,
+		ChangedAt:   task.ChangedAt,
+		Name:        task.Name,
+		Description: task.Description,
+		Deadline:    task.Deadline,
+		Status:      task.Status,
+		Priority:    task.Priority,
+	})
 }
 
 // GetAllTasks
@@ -71,7 +80,21 @@ func (h *TasksHandler) GetAllTasks(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tasks)
+	response := make([]DTOs.TaskResponse, len(tasks))
+	for i, item := range tasks {
+		response[i] = DTOs.TaskResponse{
+			ID:          item.ID,
+			CreatedAt:   item.CreatedAt,
+			ChangedAt:   item.ChangedAt,
+			Name:        item.Name,
+			Description: item.Description,
+			Deadline:    item.Deadline,
+			Status:      item.Status,
+			Priority:    item.Priority,
+		}
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 // DeleteTask
