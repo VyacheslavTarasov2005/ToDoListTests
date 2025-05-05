@@ -6,6 +6,7 @@ import (
 	"HITS_ToDoList_Tests/internal/application/interfaces"
 	"HITS_ToDoList_Tests/internal/delivery/DTOs"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -28,6 +29,7 @@ func NewTasksHandler(tasksService interfaces.TasksService) *TasksHandler {
 // @Param task body DTOs.CreateTaskRequest true "Task"
 // @Success 201 {object} models.Task
 // @Failure 400 {object} errors.ApplicationError "Bad request"
+// @Failure 500 "Internal server error"
 // @Router /tasks [post]
 func (h *TasksHandler) CreateTask(c *gin.Context) {
 	var request DTOs.CreateTaskRequest
@@ -35,7 +37,7 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.Error(errors.ApplicationError{
 			StatusCode: 400,
-			Code:       "invalid_request",
+			Code:       "InvalidRequest",
 			Errors:     map[string]string{"message": err.Error()},
 		})
 		return
@@ -58,8 +60,7 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 // @Produce json
 // @Param sorting query string false "Sorting" Enums(CreateAsc, CreateDesc, PriorityAsc, PriorityDesc, DeadlineAsc, DeadlineDesc)
 // @Success 200 {object} []models.Task
-// @Failure 400 {object} errors.ApplicationError "Bad request"
-// @Failure 500 {object} map[string]string
+// @Failure 500 "Internal server error"
 // @Router /tasks [get]
 func (h *TasksHandler) GetAllTasks(c *gin.Context) {
 	sortingParam := c.Query("sorting")
@@ -72,4 +73,36 @@ func (h *TasksHandler) GetAllTasks(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, tasks)
+}
+
+// DeleteTask
+// @Summary Delete task
+// @Description Delete task by ID
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Success 204 "No Content"
+// @Failure 400 {object} errors.ApplicationError "Bad request"
+// @Failure 404 {object} errors.ApplicationError "Not found"
+// @Failure 500 "Internal server error"
+// @Router /tasks/{id} [delete]
+func (h *TasksHandler) DeleteTask(c *gin.Context) {
+	taskIDParam := c.Param("id")
+
+	taskID, err := uuid.Parse(taskIDParam)
+	if err != nil {
+		c.Error(errors.ApplicationError{
+			StatusCode: 400,
+			Code:       "InvalidRequest",
+			Errors:     map[string]string{"message": err.Error()},
+		})
+	}
+
+	err = h.tasksService.DeleteTask(taskID)
+	if err != nil {
+		c.Error(err)
+	}
+
+	c.Status(http.StatusNoContent)
 }

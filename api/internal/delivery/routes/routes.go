@@ -10,5 +10,6 @@ func SetupRoutes(router *gin.Engine, tasksHandler *handlers.TasksHandler) {
 	{
 		tasks.POST("", tasksHandler.CreateTask)
 		tasks.GET("", tasksHandler.GetAllTasks)
+		tasks.DELETE("/:id", tasksHandler.DeleteTask)
 	}
 }

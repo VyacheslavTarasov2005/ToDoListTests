@@ -2,11 +2,13 @@ package services
 
 import (
 	appEnums "HITS_ToDoList_Tests/internal/application/enums"
+	"HITS_ToDoList_Tests/internal/application/errors"
 	appInterfaces "HITS_ToDoList_Tests/internal/application/interfaces"
 	"HITS_ToDoList_Tests/internal/application/validators"
 	"HITS_ToDoList_Tests/internal/domain/enums"
 	domainInterfaces "HITS_ToDoList_Tests/internal/domain/interfaces"
 	"HITS_ToDoList_Tests/internal/domain/models"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -39,4 +41,26 @@ func (service *TasksServiceImpl) GetAllTasks(sorting *appEnums.Sorting) ([]*mode
 	}
 
 	return tasks, nil
+}
+
+func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
+	task, err := service.tasksRepository.GetByID(taskID)
+	if err != nil {
+		return err
+	}
+
+	if task == nil {
+		return errors.ApplicationError{
+			StatusCode: 404,
+			Code:       "NotFound",
+			Errors:     map[string]string{"message": "Task not found"},
+		}
+	}
+
+	err = service.tasksRepository.DeleteByID(taskID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

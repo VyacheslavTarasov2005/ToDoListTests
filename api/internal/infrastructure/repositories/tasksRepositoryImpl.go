@@ -4,6 +4,7 @@ import (
 	"HITS_ToDoList_Tests/internal/application/enums"
 	"HITS_ToDoList_Tests/internal/domain/interfaces"
 	"HITS_ToDoList_Tests/internal/domain/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -56,4 +57,24 @@ func (repo *TasksRepositoryImpl) GetAll(sorting *enums.Sorting) ([]*models.Task,
 		return nil, err
 	}
 	return tasks, nil
+}
+
+func (repo *TasksRepositoryImpl) GetByID(id uuid.UUID) (*models.Task, error) {
+	var task models.Task
+
+	err := repo.db.Where("id = ?", id).First(&task).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &task, nil
+}
+
+func (repo *TasksRepositoryImpl) DeleteByID(taskID uuid.UUID) error {
+	err := repo.db.Where("id = ?", taskID).Delete(&models.Task{}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

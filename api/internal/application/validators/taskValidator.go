@@ -9,7 +9,7 @@ import (
 func ValidateTask(task models.Task) error {
 	err := errors.ApplicationError{
 		StatusCode: 400,
-		Code:       "validation",
+		Code:       "Validation",
 		Errors:     map[string]string{},
 	}
 
