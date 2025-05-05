@@ -12,5 +12,6 @@ func SetupRoutes(router *gin.Engine, tasksHandler *handlers.TasksHandler) {
 		tasks.GET("", tasksHandler.GetAllTasks)
 		tasks.DELETE("/:id", tasksHandler.DeleteTask)
 		tasks.PATCH("/:id", tasksHandler.UpdateTask)
+		tasks.PATCH("/:id/toggle", tasksHandler.ToggleTaskStatus)
 	}
 }

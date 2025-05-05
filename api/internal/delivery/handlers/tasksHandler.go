@@ -48,7 +48,7 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"task": task})
+	c.JSON(http.StatusCreated, task)
 }
 
 // GetAllTasks
@@ -114,7 +114,7 @@ func (h *TasksHandler) DeleteTask(c *gin.Context) {
 // @Produce json
 // @Param id path string true "id"
 // @Param task body DTOs.UpdateTaskRequest true "Task"
-// @Success 204 "No Content"
+// @Success 200 {object} DTOs.UpdateTaskResponse
 // @Failure 400 {object} errors.ApplicationError "Bad request"
 // @Failure 404 {object} errors.ApplicationError "Not found"
 // @Failure 500 "Internal server error"
@@ -141,10 +141,56 @@ func (h *TasksHandler) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	if err = h.tasksService.UpdateTask(taskID, request.Name, request.Description, request.Deadline, request.Priority); err != nil {
+	status, err := h.tasksService.UpdateTask(taskID, request.Name, request.Description, request.Deadline,
+		request.Priority)
+	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	c.JSON(http.StatusOK, DTOs.UpdateTaskResponse{Status: *status})
+}
+
+// ToggleTaskStatus
+// @Summary Toggle task's status
+// @Description Change task's status
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param task body DTOs.ToggleTaskStatusRequest true "Task"
+// @Success 200 {object} DTOs.UpdateTaskRequest
+// @Failure 400 {object} errors.ApplicationError "Bad request"
+// @Failure 404 {object} errors.ApplicationError "Not found"
+// @Failure 500 "Internal server error"
+// @Router /tasks/{id}/toggle [patch]
+func (h *TasksHandler) ToggleTaskStatus(c *gin.Context) {
+	taskIDParam := c.Param("id")
+
+	taskID, err := uuid.Parse(taskIDParam)
+	if err != nil {
+		c.Error(errors.ApplicationError{
+			StatusCode: 400,
+			Code:       "InvalidRequest",
+			Errors:     map[string]string{"message": err.Error()},
+		})
+	}
+
+	var request DTOs.ToggleTaskStatusRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.Error(errors.ApplicationError{
+			StatusCode: 400,
+			Code:       "InvalidRequest",
+			Errors:     map[string]string{"message": err.Error()},
+		})
+		return
+	}
+
+	status, err := h.tasksService.ToggleTaskStatus(taskID, request.IsDone)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, DTOs.UpdateTaskResponse{Status: *status})
 }

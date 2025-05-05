@@ -64,15 +64,15 @@ func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
 	return nil
 }
 
-func (service *TasksServiceImpl) UpdateTask(taskId uuid.UUID, name *string, description *string, deadline *time.Time,
-	priority *enums.Priority) error {
-	task, err := service.tasksRepository.GetByID(taskId)
+func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, description *string, deadline *time.Time,
+	priority *enums.Priority) (*enums.Status, error) {
+	task, err := service.tasksRepository.GetByID(taskID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if task == nil {
-		return errors.ApplicationError{
+		return nil, errors.ApplicationError{
 			StatusCode: 404,
 			Code:       "NotFound",
 			Errors:     map[string]string{"message": "Task not found"},
@@ -99,12 +99,47 @@ func (service *TasksServiceImpl) UpdateTask(taskId uuid.UUID, name *string, desc
 	}
 
 	if err := validators.ValidateTask(*task); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := service.tasksRepository.Update(*task); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &task.Status, nil
+}
+
+func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool) (*enums.Status, error) {
+	task, err := service.tasksRepository.GetByID(taskID)
+	if err != nil {
+		return nil, err
+	}
+
+	if task == nil {
+		return nil, errors.ApplicationError{
+			StatusCode: 404,
+			Code:       "NotFound",
+			Errors:     map[string]string{"message": "Task not found"},
+		}
+	}
+
+	if isDone {
+		if time.Now().Before(*task.Deadline) {
+			task.Status = enums.Completed
+		} else {
+			task.Status = enums.Overdue
+		}
+	} else {
+		if time.Now().Before(*task.Deadline) {
+			task.Status = enums.Active
+		} else {
+			task.Status = enums.Overdue
+		}
+	}
+
+	if err := service.tasksRepository.Update(*task); err != nil {
+		return nil, err
+	}
+
+	return &task.Status, nil
 }

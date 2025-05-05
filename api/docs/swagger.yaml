@@ -12,6 +12,13 @@ definitions:
     required:
     - name
     type: object
+  DTOs.ToggleTaskStatusRequest:
+    properties:
+      isDone:
+        type: boolean
+    required:
+    - isDone
+    type: object
   DTOs.UpdateTaskRequest:
     properties:
       deadline:
@@ -22,6 +29,13 @@ definitions:
         type: string
       priority:
         $ref: '#/definitions/enums.Priority'
+    type: object
+  DTOs.UpdateTaskResponse:
+    properties:
+      status:
+        $ref: '#/definitions/enums.Status'
+    required:
+    - status
     type: object
   enums.Priority:
     enum:
@@ -186,8 +200,10 @@ paths:
       produces:
       - application/json
       responses:
-        "204":
-          description: No Content
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DTOs.UpdateTaskResponse'
         "400":
           description: Bad request
           schema:
@@ -199,6 +215,43 @@ paths:
         "500":
           description: Internal server error
       summary: Update task
+      tags:
+      - tasks
+  /tasks/{id}/toggle:
+    patch:
+      consumes:
+      - application/json
+      description: Change task's status
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/DTOs.ToggleTaskStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DTOs.UpdateTaskRequest'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/errors.ApplicationError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/errors.ApplicationError'
+        "500":
+          description: Internal server error
+      summary: Toggle task's status
       tags:
       - tasks
 swagger: "2.0"

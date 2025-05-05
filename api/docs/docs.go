@@ -175,8 +175,67 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No Content"
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DTOs.UpdateTaskResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ApplicationError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ApplicationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/tasks/{id}/toggle": {
+            "patch": {
+                "description": "Change task's status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Toggle task's status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Task",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DTOs.ToggleTaskStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/DTOs.UpdateTaskRequest"
+                        }
                     },
                     "400": {
                         "description": "Bad request",
@@ -218,6 +277,17 @@ const docTemplate = `{
                 }
             }
         },
+        "DTOs.ToggleTaskStatusRequest": {
+            "type": "object",
+            "required": [
+                "isDone"
+            ],
+            "properties": {
+                "isDone": {
+                    "type": "boolean"
+                }
+            }
+        },
         "DTOs.UpdateTaskRequest": {
             "type": "object",
             "properties": {
@@ -232,6 +302,17 @@ const docTemplate = `{
                 },
                 "priority": {
                     "$ref": "#/definitions/enums.Priority"
+                }
+            }
+        },
+        "DTOs.UpdateTaskResponse": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "$ref": "#/definitions/enums.Status"
                 }
             }
         },
