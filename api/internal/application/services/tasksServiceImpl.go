@@ -57,8 +57,52 @@ func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
 		}
 	}
 
-	err = service.tasksRepository.DeleteByID(taskID)
+	if err := service.tasksRepository.DeleteByID(taskID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service *TasksServiceImpl) UpdateTask(taskId uuid.UUID, name *string, description *string, deadline *time.Time,
+	priority *enums.Priority) error {
+	task, err := service.tasksRepository.GetByID(taskId)
 	if err != nil {
+		return err
+	}
+
+	if task == nil {
+		return errors.ApplicationError{
+			StatusCode: 404,
+			Code:       "NotFound",
+			Errors:     map[string]string{"message": "Task not found"},
+		}
+	}
+
+	if name != nil {
+		task.Name = *name
+	}
+	if description != nil {
+		task.Description = description
+	}
+	if priority != nil {
+		task.Priority = *priority
+	}
+	if deadline != nil {
+		task.Deadline = deadline
+
+		if task.Status == enums.Late {
+			task.Status = enums.Completed
+		} else if task.Status == enums.Overdue {
+			task.Status = enums.Active
+		}
+	}
+
+	if err := validators.ValidateTask(*task); err != nil {
+		return err
+	}
+
+	if err := service.tasksRepository.Update(*task); err != nil {
 		return err
 	}
 

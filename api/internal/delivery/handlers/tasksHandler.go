@@ -33,7 +33,6 @@ func NewTasksHandler(tasksService interfaces.TasksService) *TasksHandler {
 // @Router /tasks [post]
 func (h *TasksHandler) CreateTask(c *gin.Context) {
 	var request DTOs.CreateTaskRequest
-
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.Error(errors.ApplicationError{
 			StatusCode: 400,
@@ -102,6 +101,49 @@ func (h *TasksHandler) DeleteTask(c *gin.Context) {
 	err = h.tasksService.DeleteTask(taskID)
 	if err != nil {
 		c.Error(err)
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+// UpdateTask
+// @Summary Update task
+// @Description Update task
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param task body DTOs.UpdateTaskRequest true "Task"
+// @Success 204 "No Content"
+// @Failure 400 {object} errors.ApplicationError "Bad request"
+// @Failure 404 {object} errors.ApplicationError "Not found"
+// @Failure 500 "Internal server error"
+// @Router /tasks/{id} [patch]
+func (h *TasksHandler) UpdateTask(c *gin.Context) {
+	taskIDParam := c.Param("id")
+
+	taskID, err := uuid.Parse(taskIDParam)
+	if err != nil {
+		c.Error(errors.ApplicationError{
+			StatusCode: 400,
+			Code:       "InvalidRequest",
+			Errors:     map[string]string{"message": err.Error()},
+		})
+	}
+
+	var request DTOs.UpdateTaskRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.Error(errors.ApplicationError{
+			StatusCode: 400,
+			Code:       "InvalidRequest",
+			Errors:     map[string]string{"message": err.Error()},
+		})
+		return
+	}
+
+	if err = h.tasksService.UpdateTask(taskID, request.Name, request.Description, request.Deadline, request.Priority); err != nil {
+		c.Error(err)
+		return
 	}
 
 	c.Status(http.StatusNoContent)

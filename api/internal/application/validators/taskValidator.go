@@ -30,7 +30,7 @@ func ValidateTask(task models.Task) error {
 	}
 
 	if !validPriorities[task.Priority] {
-		err.Errors["priorities"] = "Priorities is required"
+		err.Errors["priority"] = "Priority is required"
 	}
 
 	if len(err.Errors) > 0 {

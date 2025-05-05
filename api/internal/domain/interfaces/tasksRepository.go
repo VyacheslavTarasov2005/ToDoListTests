@@ -11,4 +11,5 @@ type TasksRepository interface {
 	GetAll(sorting *enums.Sorting) ([]*models.Task, error)
 	GetByID(id uuid.UUID) (*models.Task, error)
 	DeleteByID(taskID uuid.UUID) error
+	Update(task models.Task) error
 }

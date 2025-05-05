@@ -12,6 +12,17 @@ definitions:
     required:
     - name
     type: object
+  DTOs.UpdateTaskRequest:
+    properties:
+      deadline:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/enums.Priority'
+    type: object
   enums.Priority:
     enum:
     - Low
@@ -154,6 +165,40 @@ paths:
         "500":
           description: Internal server error
       summary: Delete task
+      tags:
+      - tasks
+    patch:
+      consumes:
+      - application/json
+      description: Update task
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/DTOs.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/errors.ApplicationError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/errors.ApplicationError'
+        "500":
+          description: Internal server error
+      summary: Update task
       tags:
       - tasks
 swagger: "2.0"
