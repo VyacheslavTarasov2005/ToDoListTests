@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	appEnums "HITS_ToDoList_Tests/internal/application/enums"
 	"HITS_ToDoList_Tests/internal/application/errors"
 	"HITS_ToDoList_Tests/internal/application/interfaces"
 	"HITS_ToDoList_Tests/internal/delivery/DTOs"
@@ -47,4 +48,28 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"task": task})
+}
+
+// GetAllTasks
+// @Summary Get all tasks
+// @Description Get all tasks with optional sorting
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param sorting query string false "Sorting" Enums(CreateAsc, CreateDesc, PriorityAsc, PriorityDesc, DeadlineAsc, DeadlineDesc)
+// @Success 200 {object} []models.Task
+// @Failure 400 {object} errors.ApplicationError "Bad request"
+// @Failure 500 {object} map[string]string
+// @Router /tasks [get]
+func (h *TasksHandler) GetAllTasks(c *gin.Context) {
+	sortingParam := c.Query("sorting")
+	sorting := appEnums.Sorting(sortingParam)
+
+	tasks, err := h.tasksService.GetAllTasks(&sorting)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, tasks)
 }

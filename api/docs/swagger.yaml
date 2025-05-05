@@ -70,6 +70,44 @@ info:
   contact: {}
 paths:
   /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get all tasks with optional sorting
+      parameters:
+      - description: Sorting
+        enum:
+        - CreateAsc
+        - CreateDesc
+        - PriorityAsc
+        - PriorityDesc
+        - DeadlineAsc
+        - DeadlineDesc
+        in: query
+        name: sorting
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/errors.ApplicationError'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all tasks
+      tags:
+      - tasks
     post:
       consumes:
       - application/json

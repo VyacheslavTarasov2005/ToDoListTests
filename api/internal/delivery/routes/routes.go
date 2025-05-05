@@ -9,5 +9,6 @@ func SetupRoutes(router *gin.Engine, tasksHandler *handlers.TasksHandler) {
 	tasks := router.Group("/tasks")
 	{
 		tasks.POST("", tasksHandler.CreateTask)
+		tasks.GET("", tasksHandler.GetAllTasks)
 	}
 }
