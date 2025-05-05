@@ -65,7 +65,7 @@ func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
 }
 
 func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, description *string, deadline *time.Time,
-	priority *enums.Priority) (*enums.Status, error) {
+	priority *enums.Priority) (*models.Task, error) {
 	task, err := service.tasksRepository.GetByID(taskID)
 	if err != nil {
 		return nil, err
@@ -98,6 +98,9 @@ func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, desc
 		}
 	}
 
+	curTime := time.Now()
+	task.ChangedAt = &curTime
+
 	if err := validators.ValidateTask(*task); err != nil {
 		return nil, err
 	}
@@ -106,10 +109,10 @@ func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, desc
 		return nil, err
 	}
 
-	return &task.Status, nil
+	return task, nil
 }
 
-func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool) (*enums.Status, error) {
+func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool) (*models.Task, error) {
 	task, err := service.tasksRepository.GetByID(taskID)
 	if err != nil {
 		return nil, err
@@ -124,22 +127,25 @@ func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool)
 	}
 
 	if isDone {
-		if time.Now().Before(*task.Deadline) {
-			task.Status = enums.Completed
-		} else {
+		if task.Deadline != nil && time.Now().After(*task.Deadline) {
 			task.Status = enums.Overdue
+		} else {
+			task.Status = enums.Completed
 		}
 	} else {
-		if time.Now().Before(*task.Deadline) {
-			task.Status = enums.Active
-		} else {
+		if task.Deadline != nil && time.Now().After(*task.Deadline) {
 			task.Status = enums.Overdue
+		} else {
+			task.Status = enums.Active
 		}
 	}
+
+	curTime := time.Now()
+	task.ChangedAt = &curTime
 
 	if err := service.tasksRepository.Update(*task); err != nil {
 		return nil, err
 	}
 
-	return &task.Status, nil
+	return task, nil
 }

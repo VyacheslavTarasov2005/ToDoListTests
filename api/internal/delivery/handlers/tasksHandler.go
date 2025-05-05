@@ -137,7 +137,7 @@ func (h *TasksHandler) DeleteTask(c *gin.Context) {
 // @Produce json
 // @Param id path string true "id"
 // @Param task body DTOs.UpdateTaskRequest true "Task"
-// @Success 200 {object} DTOs.UpdateTaskResponse
+// @Success 200 {object} DTOs.TaskResponse
 // @Failure 400 {object} errors.ApplicationError "Bad request"
 // @Failure 404 {object} errors.ApplicationError "Not found"
 // @Failure 500 "Internal server error"
@@ -164,14 +164,23 @@ func (h *TasksHandler) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	status, err := h.tasksService.UpdateTask(taskID, request.Name, request.Description, request.Deadline,
+	task, err := h.tasksService.UpdateTask(taskID, request.Name, request.Description, request.Deadline,
 		request.Priority)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, DTOs.UpdateTaskResponse{Status: *status})
+	c.JSON(http.StatusOK, DTOs.TaskResponse{
+		ID:          task.ID,
+		CreatedAt:   task.CreatedAt,
+		ChangedAt:   task.ChangedAt,
+		Name:        task.Name,
+		Description: task.Description,
+		Deadline:    task.Deadline,
+		Status:      task.Status,
+		Priority:    task.Priority,
+	})
 }
 
 // ToggleTaskStatus
@@ -182,7 +191,7 @@ func (h *TasksHandler) UpdateTask(c *gin.Context) {
 // @Produce json
 // @Param id path string true "id"
 // @Param task body DTOs.ToggleTaskStatusRequest true "Task"
-// @Success 200 {object} DTOs.UpdateTaskRequest
+// @Success 200 {object} DTOs.TaskResponse
 // @Failure 400 {object} errors.ApplicationError "Bad request"
 // @Failure 404 {object} errors.ApplicationError "Not found"
 // @Failure 500 "Internal server error"
@@ -209,11 +218,20 @@ func (h *TasksHandler) ToggleTaskStatus(c *gin.Context) {
 		return
 	}
 
-	status, err := h.tasksService.ToggleTaskStatus(taskID, request.IsDone)
+	task, err := h.tasksService.ToggleTaskStatus(taskID, *request.IsDone)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, DTOs.UpdateTaskResponse{Status: *status})
+	c.JSON(http.StatusOK, DTOs.TaskResponse{
+		ID:          task.ID,
+		CreatedAt:   task.CreatedAt,
+		ChangedAt:   task.ChangedAt,
+		Name:        task.Name,
+		Description: task.Description,
+		Deadline:    task.Deadline,
+		Status:      task.Status,
+		Priority:    task.Priority,
+	})
 }

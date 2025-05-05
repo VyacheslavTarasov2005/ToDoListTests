@@ -12,6 +12,31 @@ definitions:
     required:
     - name
     type: object
+  DTOs.TaskResponse:
+    properties:
+      changedAt:
+        type: string
+      createdAt:
+        type: string
+      deadline:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/enums.Priority'
+      status:
+        $ref: '#/definitions/enums.Status'
+    required:
+    - createdAt
+    - id
+    - name
+    - priority
+    - status
+    type: object
   DTOs.ToggleTaskStatusRequest:
     properties:
       isDone:
@@ -29,13 +54,6 @@ definitions:
         type: string
       priority:
         $ref: '#/definitions/enums.Priority'
-    type: object
-  DTOs.UpdateTaskResponse:
-    properties:
-      status:
-        $ref: '#/definitions/enums.Status'
-    required:
-    - status
     type: object
   enums.Priority:
     enum:
@@ -203,7 +221,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/DTOs.UpdateTaskResponse'
+            $ref: '#/definitions/DTOs.TaskResponse'
         "400":
           description: Bad request
           schema:
@@ -240,7 +258,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/DTOs.UpdateTaskRequest'
+            $ref: '#/definitions/DTOs.TaskResponse'
         "400":
           description: Bad request
           schema:

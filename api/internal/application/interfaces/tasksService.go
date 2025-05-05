@@ -13,6 +13,6 @@ type TasksService interface {
 	GetAllTasks(sorting *appEnums.Sorting) ([]*models.Task, error)
 	DeleteTask(taskID uuid.UUID) error
 	UpdateTask(taskId uuid.UUID, name *string, description *string, deadline *time.Time,
-		priority *enums.Priority) (*enums.Status, error)
-	ToggleTaskStatus(taskID uuid.UUID, isDone bool) (*enums.Status, error)
+		priority *enums.Priority) (*models.Task, error)
+	ToggleTaskStatus(taskID uuid.UUID, isDone bool) (*models.Task, error)
 }

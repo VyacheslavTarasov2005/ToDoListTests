@@ -178,7 +178,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/DTOs.UpdateTaskResponse"
+                            "$ref": "#/definitions/DTOs.TaskResponse"
                         }
                     },
                     "400": {
@@ -234,7 +234,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/DTOs.UpdateTaskRequest"
+                            "$ref": "#/definitions/DTOs.TaskResponse"
                         }
                     },
                     "400": {
@@ -277,6 +277,42 @@ const docTemplate = `{
                 }
             }
         },
+        "DTOs.TaskResponse": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "name",
+                "priority",
+                "status"
+            ],
+            "properties": {
+                "changedAt": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deadline": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "$ref": "#/definitions/enums.Priority"
+                },
+                "status": {
+                    "$ref": "#/definitions/enums.Status"
+                }
+            }
+        },
         "DTOs.ToggleTaskStatusRequest": {
             "type": "object",
             "required": [
@@ -302,17 +338,6 @@ const docTemplate = `{
                 },
                 "priority": {
                     "$ref": "#/definitions/enums.Priority"
-                }
-            }
-        },
-        "DTOs.UpdateTaskResponse": {
-            "type": "object",
-            "required": [
-                "status"
-            ],
-            "properties": {
-                "status": {
-                    "$ref": "#/definitions/enums.Status"
                 }
             }
         },
