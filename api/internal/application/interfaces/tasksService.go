@@ -15,4 +15,5 @@ type TasksService interface {
 	UpdateTask(taskId uuid.UUID, name *string, description *string, deadline *time.Time,
 		priority *enums.Priority) (*models.Task, error)
 	ToggleTaskStatus(taskID uuid.UUID, isDone bool) (*models.Task, error)
+	UpdateTaskStatuses()
 }

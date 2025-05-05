@@ -8,10 +8,12 @@ import (
 	"HITS_ToDoList_Tests/internal/delivery/routes"
 	"HITS_ToDoList_Tests/internal/infrastructure/db"
 	"HITS_ToDoList_Tests/internal/infrastructure/repositories"
+	"HITS_ToDoList_Tests/internal/infrastructure/schedulers"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
 	"github.com/swaggo/gin-swagger"
 	"log"
+	"time"
 )
 
 func main() {
@@ -27,6 +29,8 @@ func main() {
 
 	tasksRepository := repositories.NewTasksRepository(dbConn)
 	tasksService := services.NewTasksService(tasksRepository)
+
+	schedulers.StartTasksDeadlineScheduling(tasksService, time.Second)
 
 	r := gin.Default()
 

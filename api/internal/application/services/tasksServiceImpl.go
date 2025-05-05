@@ -8,6 +8,7 @@ import (
 	"HITS_ToDoList_Tests/internal/domain/enums"
 	domainInterfaces "HITS_ToDoList_Tests/internal/domain/interfaces"
 	"HITS_ToDoList_Tests/internal/domain/models"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -148,4 +149,23 @@ func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool)
 	}
 
 	return task, nil
+}
+
+func (service *TasksServiceImpl) UpdateTaskStatuses() {
+	tasks, err := service.tasksRepository.GetAll(nil)
+	if err != nil {
+		fmt.Println("Failed to get all tasks", err.Error())
+		return
+	}
+
+	curTime := time.Now()
+	for _, task := range tasks {
+		if task.Status == enums.Active && task.Deadline != nil && curTime.After(*task.Deadline) {
+			task.Status = enums.Overdue
+			task.ChangedAt = &curTime
+			if err := service.tasksRepository.Update(*task); err != nil {
+				fmt.Println("Failed to update task", err.Error())
+			}
+		}
+	}
 }
