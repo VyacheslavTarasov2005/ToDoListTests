@@ -18,8 +18,8 @@ func ValidateTask(task models.Task) error {
 		err.Errors["name"] = "Name is required"
 	}
 
-	if task.Deadline != nil && task.Deadline.Before(time.Now()) {
-		err.Errors["deadline"] = "Deadline can't be in the past"
+	if task.Deadline != nil && !task.Deadline.After(time.Now()) {
+		err.Errors["deadline"] = "Deadline must be in the future"
 	}
 
 	validPriorities := map[enums.Priority]bool{
