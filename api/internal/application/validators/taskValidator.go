@@ -2,6 +2,7 @@ package validators
 
 import (
 	"HITS_ToDoList_Tests/internal/application/errors"
+	"HITS_ToDoList_Tests/internal/domain/enums"
 	"HITS_ToDoList_Tests/internal/domain/models"
 	"time"
 )
@@ -19,6 +20,17 @@ func ValidateTask(task models.Task) error {
 
 	if task.Deadline != nil && task.Deadline.Before(time.Now()) {
 		err.Errors["deadline"] = "Deadline can't be in the past"
+	}
+
+	validPriorities := map[enums.Priority]bool{
+		enums.Low:      true,
+		enums.Medium:   true,
+		enums.High:     true,
+		enums.Critical: true,
+	}
+
+	if !validPriorities[task.Priority] {
+		err.Errors["priorities"] = "Priorities is required"
 	}
 
 	if len(err.Errors) > 0 {
