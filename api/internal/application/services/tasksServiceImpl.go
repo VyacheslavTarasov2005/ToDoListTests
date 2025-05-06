@@ -10,6 +10,8 @@ import (
 	"HITS_ToDoList_Tests/internal/domain/models"
 	"fmt"
 	"github.com/google/uuid"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -23,7 +25,9 @@ func NewTasksService(tasksRepository domainInterfaces.TasksRepository) appInterf
 
 func (service *TasksServiceImpl) CreateTask(
 	name string, description *string, deadline *time.Time, priority *enums.Priority) (*models.Task, error) {
+	parseTaskName(&name, &deadline, &priority)
 	task := models.NewTask(name, description, deadline, nil, priority)
+
 	if err := validators.ValidateTask(*task); err != nil {
 		return nil, err
 	}
@@ -79,6 +83,8 @@ func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, desc
 			Errors:     map[string]string{"message": "Task not found"},
 		}
 	}
+
+	parseTaskName(name, &deadline, &priority)
 
 	if name != nil {
 		task.Name = *name
@@ -168,4 +174,40 @@ func (service *TasksServiceImpl) UpdateTaskStatuses() {
 			}
 		}
 	}
+}
+
+func parseTaskName(name *string, deadline **time.Time, priority **enums.Priority) {
+	cleanName := *name
+
+	if *deadline == nil {
+		pattern := regexp.MustCompile(`!before (\d{2}[.-]\d{2}[.-]\d{4})`)
+		matches := pattern.FindStringSubmatch(cleanName)
+
+		if len(matches) == 2 {
+			date, err := time.Parse("02.01.2006", strings.ReplaceAll(matches[1], "-", "."))
+			if err == nil {
+				*deadline = &date
+				cleanName = pattern.ReplaceAllString(cleanName, "")
+			}
+		}
+	}
+
+	if *priority == nil {
+		patterns := map[string]enums.Priority{
+			`!1`: enums.Critical,
+			`!2`: enums.High,
+			`!3`: enums.Medium,
+			`!4`: enums.Low,
+		}
+
+		for macro, p := range patterns {
+			if strings.Contains(cleanName, macro) {
+				*priority = &p
+				cleanName = strings.ReplaceAll(cleanName, macro, "")
+				break
+			}
+		}
+	}
+
+	*name = strings.TrimSpace(cleanName)
 }

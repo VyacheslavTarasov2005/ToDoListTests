@@ -7,12 +7,12 @@ import (
 )
 
 type TaskResponse struct {
-	ID          uuid.UUID      `json:"id" binding:"required"`
-	CreatedAt   time.Time      `json:"createdAt" binding:"required"`
-	ChangedAt   *time.Time     `json:"changedAt"`
-	Name        string         `json:"name" binding:"required"`
-	Description *string        `json:"description"`
-	Deadline    *time.Time     `json:"deadline"`
-	Status      enums.Status   `json:"status" binding:"required"`
-	Priority    enums.Priority `json:"priority" binding:"required"`
+	ID          uuid.UUID `binding:"required"`
+	CreatedAt   time.Time `binding:"required"`
+	ChangedAt   *time.Time
+	Name        string `binding:"required"`
+	Description *string
+	Deadline    *time.Time
+	Status      enums.Status   `binding:"required"`
+	Priority    enums.Priority `binding:"required"`
 }

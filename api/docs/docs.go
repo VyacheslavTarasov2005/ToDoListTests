@@ -273,7 +273,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "priority": {
-                    "$ref": "#/definitions/enums.Priority"
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Critical"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.Priority"
+                        }
+                    ]
                 }
             }
         },
@@ -337,7 +347,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "priority": {
-                    "$ref": "#/definitions/enums.Priority"
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Critical"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.Priority"
+                        }
+                    ]
                 }
             }
         },

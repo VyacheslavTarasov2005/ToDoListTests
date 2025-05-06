@@ -262,7 +262,17 @@
                     "type": "string"
                 },
                 "priority": {
-                    "$ref": "#/definitions/enums.Priority"
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Critical"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.Priority"
+                        }
+                    ]
                 }
             }
         },
@@ -326,7 +336,17 @@
                     "type": "string"
                 },
                 "priority": {
-                    "$ref": "#/definitions/enums.Priority"
+                    "enum": [
+                        "Low",
+                        "Medium",
+                        "High",
+                        "Critical"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/enums.Priority"
+                        }
+                    ]
                 }
             }
         },

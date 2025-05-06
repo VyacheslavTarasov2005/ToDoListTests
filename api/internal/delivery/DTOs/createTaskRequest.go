@@ -6,8 +6,8 @@ import (
 )
 
 type CreateTaskRequest struct {
-	Name        *string         `json:"name" binding:"required"`
-	Description *string         `json:"description"`
-	Deadline    *time.Time      `json:"deadline"`
-	Priority    *enums.Priority `json:"priority"`
+	Name        *string `binding:"required"`
+	Description *string
+	Deadline    *time.Time
+	Priority    *enums.Priority `binding:"omitempty,oneof=Low Medium High Critical" msg:"Incorrect Priority"`
 }
