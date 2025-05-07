@@ -81,7 +81,7 @@ func TestTasksRepositoryImpl_GetAll(t *testing.T) {
 		},
 		{
 			name:          "Получение задач с сортировкой по дате создания (по возрастанию)",
-			sorting:       utils.Ptr(appEnums.CreateAsc),
+			sorting:       (*appEnums.Sorting)(utils.Ptr(appEnums.CreateAsc)),
 			expectedQuery: `SELECT * FROM "tasks" ORDER BY created_at`,
 			tasks: []*models.Task{
 				{
@@ -108,7 +108,7 @@ func TestTasksRepositoryImpl_GetAll(t *testing.T) {
 		},
 		{
 			name:          "Получение задач с сортировкой по дате создания (по убыванию)",
-			sorting:       utils.Ptr(appEnums.CreateDesc),
+			sorting:       (*appEnums.Sorting)(utils.Ptr(appEnums.CreateDesc)),
 			expectedQuery: `SELECT * FROM "tasks" ORDER BY created_at DESC`,
 			tasks: []*models.Task{
 				{
@@ -135,7 +135,7 @@ func TestTasksRepositoryImpl_GetAll(t *testing.T) {
 		},
 		{
 			name:          "Получение задач с сортировкой по дедлайну (по возрастанию)",
-			sorting:       utils.Ptr(appEnums.DeadlineAsc),
+			sorting:       (*appEnums.Sorting)(utils.Ptr(appEnums.DeadlineAsc)),
 			expectedQuery: `SELECT * FROM "tasks" ORDER BY deadline NULLS FIRST`,
 			tasks: []*models.Task{
 				models.NewTask("task1", nil, utils.Ptr(time.Now().Add(time.Hour)), nil, nil),
@@ -144,7 +144,7 @@ func TestTasksRepositoryImpl_GetAll(t *testing.T) {
 		},
 		{
 			name:          "Получение задач с сортировкой по дедлайну (по убыванию)",
-			sorting:       utils.Ptr(appEnums.DeadlineDesc),
+			sorting:       (*appEnums.Sorting)(utils.Ptr(appEnums.DeadlineDesc)),
 			expectedQuery: `SELECT * FROM "tasks" ORDER BY deadline DESC NULLS LAST`,
 			tasks: []*models.Task{
 				models.NewTask("task1", nil, utils.Ptr(time.Now().Add(2*time.Hour)), nil, nil),
@@ -153,7 +153,7 @@ func TestTasksRepositoryImpl_GetAll(t *testing.T) {
 		},
 		{
 			name:    "Получение задач с сортировкой по приоритету (по возрастанию)",
-			sorting: utils.Ptr(appEnums.PriorityAsc),
+			sorting: (*appEnums.Sorting)(utils.Ptr(appEnums.PriorityAsc)),
 			expectedQuery: `SELECT * FROM "tasks" 
          		ORDER BY CASE priority 
          		WHEN 'Low' THEN 1
@@ -168,7 +168,7 @@ func TestTasksRepositoryImpl_GetAll(t *testing.T) {
 		},
 		{
 			name:    "Получение задач с сортировкой по приоритету (по убыванию)",
-			sorting: utils.Ptr(appEnums.PriorityDesc),
+			sorting: (*appEnums.Sorting)(utils.Ptr(appEnums.PriorityDesc)),
 			expectedQuery: `SELECT * FROM "tasks" 
          		ORDER BY CASE priority 
          		WHEN 'Low' THEN 1 
