@@ -5,6 +5,7 @@ import (
 	"HITS_ToDoList_Tests/internal/domain/interfaces"
 	"HITS_ToDoList_Tests/internal/domain/models"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -51,6 +52,8 @@ func (repo *TasksRepositoryImpl) GetAll(sorting *enums.Sorting) ([]*models.Task,
             WHEN 'High' THEN 3
             WHEN 'Critical' THEN 4
         END DESC`).Find(&tasks).Error
+		default:
+			return nil, errors.New(fmt.Sprintf("Invalid sorting: %v", sorting))
 		}
 	} else {
 		err = repo.db.Find(&tasks).Error

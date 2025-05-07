@@ -8,6 +8,7 @@ import (
 	"HITS_ToDoList_Tests/internal/domain/enums"
 	domainInterfaces "HITS_ToDoList_Tests/internal/domain/interfaces"
 	"HITS_ToDoList_Tests/internal/domain/models"
+	"HITS_ToDoList_Tests/internal/pkg/utils"
 	"fmt"
 	"github.com/google/uuid"
 	"regexp"
@@ -26,11 +27,12 @@ func NewTasksService(tasksRepository domainInterfaces.TasksRepository) appInterf
 func (service *TasksServiceImpl) CreateTask(
 	name string, description *string, deadline *time.Time, priority *enums.Priority) (*models.Task, error) {
 	parseTaskName(&name, &deadline, &priority)
-	task := models.NewTask(name, description, deadline, nil, priority)
 
-	if err := validators.ValidateTask(*task); err != nil {
+	if err := validators.ValidateTask(name, deadline, priority); err != nil {
 		return nil, err
 	}
+
+	task := models.NewTask(name, description, deadline, nil, priority)
 
 	if err := service.tasksRepository.Add(*task); err != nil {
 		return nil, err
@@ -69,8 +71,12 @@ func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
 	return nil
 }
 
-func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, description *string, deadline *time.Time,
+func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name string, description *string, deadline *time.Time,
 	priority *enums.Priority) (*models.Task, error) {
+	if err := validators.ValidateTask(name, deadline, priority); err != nil {
+		return nil, err
+	}
+
 	task, err := service.tasksRepository.GetByID(taskID)
 	if err != nil {
 		return nil, err
@@ -84,33 +90,25 @@ func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name *string, desc
 		}
 	}
 
-	parseTaskName(name, &deadline, &priority)
+	parseTaskName(&name, &deadline, &priority)
 
-	if name != nil {
-		task.Name = *name
-	}
-	if description != nil {
-		task.Description = description
-	}
+	task.Name = name
+	task.Description = description
+
 	if priority != nil {
 		task.Priority = *priority
-	}
-	if deadline != nil {
-		task.Deadline = deadline
-
-		if task.Status == enums.Late {
-			task.Status = enums.Completed
-		} else if task.Status == enums.Overdue {
-			task.Status = enums.Active
-		}
+	} else {
+		task.Priority = enums.Medium
 	}
 
-	curTime := time.Now()
-	task.ChangedAt = &curTime
-
-	if err := validators.ValidateTask(*task); err != nil {
-		return nil, err
+	task.Deadline = deadline
+	if task.Status == enums.Late {
+		task.Status = enums.Completed
+	} else if task.Status == enums.Overdue {
+		task.Status = enums.Active
 	}
+
+	task.ChangedAt = utils.Ptr(time.Now())
 
 	if err := service.tasksRepository.Update(*task); err != nil {
 		return nil, err
@@ -135,7 +133,7 @@ func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool)
 
 	if isDone {
 		if task.Deadline != nil && time.Now().After(*task.Deadline) {
-			task.Status = enums.Overdue
+			task.Status = enums.Late
 		} else {
 			task.Status = enums.Completed
 		}
@@ -147,8 +145,7 @@ func (service *TasksServiceImpl) ToggleTaskStatus(taskID uuid.UUID, isDone bool)
 		}
 	}
 
-	curTime := time.Now()
-	task.ChangedAt = &curTime
+	task.ChangedAt = utils.Ptr(time.Now())
 
 	if err := service.tasksRepository.Update(*task); err != nil {
 		return nil, err

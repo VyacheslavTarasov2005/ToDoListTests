@@ -5,6 +5,7 @@ import (
 	"HITS_ToDoList_Tests/internal/application/errors"
 	"HITS_ToDoList_Tests/internal/application/interfaces"
 	"HITS_ToDoList_Tests/internal/delivery/DTOs"
+	"HITS_ToDoList_Tests/internal/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -71,10 +72,18 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 // @Failure 500 "Internal server error"
 // @Router /tasks [get]
 func (h *TasksHandler) GetAllTasks(c *gin.Context) {
-	sortingParam := c.Query("sorting")
-	sorting := appEnums.Sorting(sortingParam)
+	sorting := c.Query("sorting")
 
-	tasks, err := h.tasksService.GetAllTasks(&sorting)
+	err := appEnums.ValidateSorting(appEnums.Sorting(sorting))
+	if err != nil {
+		c.Error(errors.ApplicationError{
+			StatusCode: 400,
+			Code:       "InvalidRequest",
+			Errors:     map[string]string{"message": err.Error()},
+		})
+	}
+
+	tasks, err := h.tasksService.GetAllTasks(utils.Ptr(appEnums.Sorting(sorting)))
 	if err != nil {
 		c.Error(err)
 		return
@@ -141,7 +150,7 @@ func (h *TasksHandler) DeleteTask(c *gin.Context) {
 // @Failure 400 {object} errors.ApplicationError "Bad request"
 // @Failure 404 {object} errors.ApplicationError "Not found"
 // @Failure 500 "Internal server error"
-// @Router /tasks/{id} [patch]
+// @Router /tasks/{id} [put]
 func (h *TasksHandler) UpdateTask(c *gin.Context) {
 	taskIDParam := c.Param("id")
 
@@ -164,7 +173,7 @@ func (h *TasksHandler) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	task, err := h.tasksService.UpdateTask(taskID, request.Name, request.Description, request.Deadline,
+	task, err := h.tasksService.UpdateTask(taskID, *request.Name, request.Description, request.Deadline,
 		request.Priority)
 	if err != nil {
 		c.Error(err)

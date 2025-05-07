@@ -102,49 +102,7 @@ const docTemplate = `{
             }
         },
         "/tasks/{id}": {
-            "delete": {
-                "description": "Delete task by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tasks"
-                ],
-                "summary": "Delete task",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ApplicationError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.ApplicationError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    }
-                }
-            },
-            "patch": {
+            "put": {
                 "description": "Update task",
                 "consumes": [
                     "application/json"
@@ -180,6 +138,48 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/DTOs.TaskResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ApplicationError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.ApplicationError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete task by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Delete task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
                     },
                     "400": {
                         "description": "Bad request",
@@ -336,6 +336,9 @@ const docTemplate = `{
         },
         "DTOs.UpdateTaskRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
                 "deadline": {
                     "type": "string"

@@ -66,6 +66,8 @@ definitions:
         - Medium
         - High
         - Critical
+    required:
+    - name
     type: object
   enums.Priority:
     enum:
@@ -211,7 +213,7 @@ paths:
       summary: Delete task
       tags:
       - tasks
-    patch:
+    put:
       consumes:
       - application/json
       description: Update task
