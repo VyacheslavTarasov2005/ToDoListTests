@@ -73,6 +73,7 @@ func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
 
 func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name string, description *string, deadline *time.Time,
 	priority *enums.Priority) (*models.Task, error) {
+	parseTaskName(&name, &deadline, &priority)
 	if err := validators.ValidateTask(name, deadline, priority); err != nil {
 		return nil, err
 	}
@@ -89,8 +90,6 @@ func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name string, descr
 			Errors:     map[string]string{"message": "Task not found"},
 		}
 	}
-
-	parseTaskName(&name, &deadline, &priority)
 
 	task.Name = name
 	task.Description = description
