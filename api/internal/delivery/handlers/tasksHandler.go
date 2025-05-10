@@ -72,18 +72,24 @@ func (h *TasksHandler) CreateTask(c *gin.Context) {
 // @Failure 500 "Internal server error"
 // @Router /tasks [get]
 func (h *TasksHandler) GetAllTasks(c *gin.Context) {
-	sorting := c.Query("sorting")
-
-	err := appEnums.ValidateSorting(appEnums.Sorting(sorting))
-	if err != nil {
-		c.Error(errors.ApplicationError{
-			StatusCode: 400,
-			Code:       "InvalidRequest",
-			Errors:     map[string]string{"message": err.Error()},
-		})
+	var sorting = utils.Ptr(c.Query("sorting"))
+	if *sorting == "" {
+		sorting = nil
 	}
 
-	tasks, err := h.tasksService.GetAllTasks(utils.Ptr(appEnums.Sorting(sorting)))
+	if sorting != nil {
+		err := appEnums.ValidateSorting(appEnums.Sorting(*sorting))
+		if err != nil {
+			c.Error(errors.ApplicationError{
+				StatusCode: 400,
+				Code:       "InvalidRequest",
+				Errors:     map[string]string{"message": err.Error()},
+			})
+			return
+		}
+	}
+
+	tasks, err := h.tasksService.GetAllTasks((*appEnums.Sorting)(sorting))
 	if err != nil {
 		c.Error(err)
 		return
@@ -128,11 +134,13 @@ func (h *TasksHandler) DeleteTask(c *gin.Context) {
 			Code:       "InvalidRequest",
 			Errors:     map[string]string{"message": err.Error()},
 		})
+		return
 	}
 
 	err = h.tasksService.DeleteTask(taskID)
 	if err != nil {
 		c.Error(err)
+		return
 	}
 
 	c.Status(http.StatusNoContent)
@@ -161,6 +169,7 @@ func (h *TasksHandler) UpdateTask(c *gin.Context) {
 			Code:       "InvalidRequest",
 			Errors:     map[string]string{"message": err.Error()},
 		})
+		return
 	}
 
 	var request DTOs.UpdateTaskRequest
@@ -215,6 +224,7 @@ func (h *TasksHandler) ToggleTaskStatus(c *gin.Context) {
 			Code:       "InvalidRequest",
 			Errors:     map[string]string{"message": err.Error()},
 		})
+		return
 	}
 
 	var request DTOs.ToggleTaskStatusRequest
