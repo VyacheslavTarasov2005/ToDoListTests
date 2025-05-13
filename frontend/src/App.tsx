@@ -1,35 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { task } from "./entities/task.ts";
+import { ToDoList } from "./components/ToDoList.tsx";
+import { Header } from "./components/Header.tsx";
+
+let task1 = new task("1", "Task 1: Complete project", "Medium", "Active");
+let task2 = new task("2", "Task 2: Review code", "High", "Late", "Check all pull requests",
+    new Date("2023-12-17T03:24:00"));
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <div className="layout">
+            <Header/>
+            <div className="page-content">
+                <ToDoList tasks={[task1, task2]} />
+            </div>
+        </div>
+    )
 }
 
-export default App
+export default App;
