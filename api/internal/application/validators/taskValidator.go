@@ -2,18 +2,17 @@ package validators
 
 import (
 	"HITS_ToDoList_Tests/internal/application/errors"
-	"HITS_ToDoList_Tests/internal/domain/enums"
 	"time"
 )
 
-func ValidateTask(name string, deadline *time.Time, priority *enums.Priority) error {
+func ValidateTask(name string, deadline *time.Time) error {
 	err := errors.ApplicationError{
 		StatusCode: 400,
 		Code:       "ValidationFailed",
 		Errors:     map[string]string{},
 	}
 
-	if name == "" {
+	if len(name) < 4 {
 		err.Errors["name"] = "Name is required"
 	}
 

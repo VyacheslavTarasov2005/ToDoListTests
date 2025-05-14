@@ -34,6 +34,8 @@ func main() {
 
 	r := gin.Default()
 
+	// Добавляем CORS middleware первым
+	r.Use(middleware.Cors())
 	r.Use(middleware.ErrorHandler())
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

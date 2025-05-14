@@ -28,7 +28,7 @@ func (service *TasksServiceImpl) CreateTask(
 	name string, description *string, deadline *time.Time, priority *enums.Priority) (*models.Task, error) {
 	parseTaskName(&name, &deadline, &priority)
 
-	if err := validators.ValidateTask(name, deadline, priority); err != nil {
+	if err := validators.ValidateTask(name, deadline); err != nil {
 		return nil, err
 	}
 
@@ -74,7 +74,7 @@ func (service *TasksServiceImpl) DeleteTask(taskID uuid.UUID) error {
 func (service *TasksServiceImpl) UpdateTask(taskID uuid.UUID, name string, description *string, deadline *time.Time,
 	priority *enums.Priority) (*models.Task, error) {
 	parseTaskName(&name, &deadline, &priority)
-	if err := validators.ValidateTask(name, deadline, priority); err != nil {
+	if err := validators.ValidateTask(name, deadline); err != nil {
 		return nil, err
 	}
 
