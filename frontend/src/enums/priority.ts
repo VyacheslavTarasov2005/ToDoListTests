@@ -1,0 +1,1 @@
+export type priority = 'Low' | 'Medium' | 'High' | 'Critical'
